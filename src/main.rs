@@ -15,9 +15,33 @@
     - Notes
 */
 
-fn main() {
+// Crates //
+use std::io;
+use std::io::prelude::*;
+use std::io::BufReader;
+use std::fs::File;
 
-    let message_for_lila = "fortnite";
+fn main() -> io::Result<()> {
+    let mut exit_condition = false;
+    let mut confirmation = String::new();
 
-    println!("{}", message_for_lila);
+    let file = File::open("src/GameLog.txt")?;
+    let mut reader = BufReader::new(file);
+    let mut buffer = String::new();
+
+    println!(
+        "Welcome To Your Game Log!
+Here You Can:
+- Add
+- Remove
+- Search For Games
+
+And also bring up details on:
+- All Playthroughs
+- Last Playthrough
+- Rating
+- Notes"
+    );
+
+    Ok(())
 }
