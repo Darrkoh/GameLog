@@ -161,7 +161,7 @@ fn whole_list(game_log: &Vec<Game>) // Literally just print the whole file and r
     else {
         for num in game_log
             {
-                println!("\nName: {}\n  Rating /10: {}\n  Times Played: {}\n  Last Played: {}\n  Notes: {}",
+                println!("\nName: {}\n  Rating /5: {}/5\n  Times Played: {}\n  Last Played: {}\n  Notes: {}",
                     num.name,
                     num.rating,
                     num.times_played,

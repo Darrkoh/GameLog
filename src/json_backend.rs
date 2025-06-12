@@ -18,7 +18,7 @@ pub struct Game {
 // Read a parse JSON from text file into a vector 
 pub fn reading_json() -> io::Result<Vec<Game>> // Result is wrapped around incase there is an error returned
 {
-    let file = File::open("src/GameLog.json")?; // Gets file contents
+    let file = File::open("src/GameLog.Json")?; // Gets file contents
 
     let reader = BufReader::new(file);
     let game = serde_json::from_reader(reader); // Adds every JSON entry in the text file to a vector
@@ -47,8 +47,10 @@ pub fn adding_game(game_log: &mut Vec<Game>, new_game: Game) -> Result<()>
     let mut file = OpenOptions::new()
     .write(true)
     .truncate(true).
-    open("GameLog.Json")?;
-    let _ = file.write_all(new_json.as_bytes()); // Silenced error ;-;
+    open("src/GameLog.Json")?;
+    file.write_all(new_json.as_bytes())?;
+    file.flush()?; // Ensure data is physically written
+
 
     Ok(())
 }
