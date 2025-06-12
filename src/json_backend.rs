@@ -1,8 +1,10 @@
 // Crates //
-use std::io;
-use std::io::BufReader;
+use std::{fs::OpenOptions, io};
+use std::io::{BufReader, Write};
 use std::fs::File;
 use serde::{Deserialize, Serialize};
+use std::io::Result;
+
 
 #[derive(Serialize, Deserialize)]
 pub struct Game {
@@ -16,7 +18,7 @@ pub struct Game {
 // Read a parse JSON from text file into a vector 
 pub fn reading_json() -> io::Result<Vec<Game>> // Result is wrapped around incase there is an error returned
 {
-    let file = File::open("src/GameLog.txt")?; // Gets file contents
+    let file = File::open("src/GameLog.json")?; // Gets file contents
 
     let reader = BufReader::new(file);
     let game = serde_json::from_reader(reader); // Adds every JSON entry in the text file to a vector
@@ -33,7 +35,20 @@ pub fn reading_json() -> io::Result<Vec<Game>> // Result is wrapped around incas
 }
 
 // Create a Game and add it's Json data to the text file
-pub fn adding_game(game_log: &mut Vec<Game>, new_game: &Game)
+pub fn adding_game(game_log: &mut Vec<Game>, new_game: Game) -> Result<()>
 {
+    game_log.push(new_game); // Add new game to the Game Log list displayed to users 
 
+    // Serialising a the game_log into JSON and overwriting the previous file with this new data. It's literally the same with the new data added
+
+     let new_json = serde_json::to_string_pretty(&game_log)?;
+
+    // Write back to file (overwrite)
+    let mut file = OpenOptions::new()
+    .write(true)
+    .truncate(true).
+    open("GameLog.Json")?;
+    let _ = file.write_all(new_json.as_bytes()); // Silenced error ;-;
+
+    Ok(())
 }

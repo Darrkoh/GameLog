@@ -16,13 +16,15 @@
 */
 
 mod json_backend;
+mod clock;
 
 // Crates //
 use std::io;
 use std::u8;
 use json_backend::Game;
 use json_backend::reading_json;
-
+use clock::get_date;
+use json_backend::adding_game;
 
 // THIS IS THE INTERFACE USERS WILL BE INTERACTING WITH //
 fn main() -> io::Result<()> {
@@ -84,7 +86,7 @@ And also bring up details on:
     Ok(())
 }
 
-fn adding(game_log: &mut Vec<Game>)
+fn adding(mut game_log: &mut Vec<Game>)
 {
     let mut game_name = String::new();
     let mut rating_string:String = String::new();
@@ -110,22 +112,15 @@ fn adding(game_log: &mut Vec<Game>)
     let _ = io::stdin().read_line(&mut rating_string); // Literally just to shut up the warning, im using let
     
     let trimmed = rating_string.trim();
-    let game_rating = trimmed.parse::<u8>();
-
-    // If there is a parsing error, return to menu
-    match game_rating {
-        Ok(parsed) => Ok(parsed), // Either return the parsed Json List, or an error 
-        Err(_e) => 
-        {
-            println!("Nice try, Please enter an valid number.");
+    let game_rating: u8 = match trimmed.parse::<u8>()
+    {
+        // If there is a parsing error, return to menu{
+       Ok(num) if num >= 1 && num <= 5 => num,
+        _ => {
+            println!("Invalid rating. Please enter a number between 1 and 5.");
             return;
         }
-    }
-
-    if (0 > game_rating || game_rating > 5 )
-    {
-        println!("You entered an invalid number, please enter a rating from 1-5, returning to menu")
-    }
+    };
 
     // NOTES
     println!("Any Notes? (Just press enter if not");
@@ -134,13 +129,13 @@ fn adding(game_log: &mut Vec<Game>)
     // Create Model and add to Text file/Vector
 
     let new_game = Game {
-        &game_name;
-        &game_rating,
-        0,
-         ,
-        game_notes
+        name: game_name,
+        rating: game_rating,
+        times_played: 1,
+        last_playthrough: get_date().to_string(),
+        notes: game_notes
     };
-    adding_game(&mut game_log);
+    adding_game(&mut game_log, new_game);
 
     // Confirmation message
     println!("Game added to the log! :D");
