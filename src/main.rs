@@ -50,6 +50,7 @@ And also bring up details on:
         - Removing (2)
         - Searching (3) 
         - Bring up whole list (4)
+        - Exit Program (5)
         ");
 
         // Read user's choice
@@ -60,7 +61,7 @@ And also bring up details on:
 
         match input.as_str(){ // We turn input into a 'str' as 'String' and 'str' are not the same thing as 'str' is part of a string 
             "1"=> { 
-                adding(&mut game_log);
+                adding(&mut game_log); // All referenced so we can just edit the original in the main function
             },
             "2"=> { 
                 removing(&mut game_log);
@@ -82,17 +83,17 @@ And also bring up details on:
     Ok(())
 }
 
-fn adding(game_log: &mut Vec<Game>)
+fn adding(_game_log: &mut Vec<Game>)
 {
     print!("In Progress");
 }
 
-fn removing(game_log: &mut Vec<Game>)
+fn removing(_game_log: &mut Vec<Game>)
 {
     print!("In Progress");
 }
 
-fn searching(game_log: &Vec<Game>)
+fn searching(_game_log: &Vec<Game>)
 {
     print!("In Progress");
 }
@@ -114,4 +115,11 @@ fn whole_list(game_log: &Vec<Game>) // Literally just print the whole file and r
                 );
             }
     }
+
+    // Just a cleaner approach than having the program immediately take the user to the main menu
+    println!("\n \n Please press any key to go back to the main menu");
+
+    // Read user's choice
+        let mut input = String::new();
+        io::stdin().read_line(&mut input); 
 }
