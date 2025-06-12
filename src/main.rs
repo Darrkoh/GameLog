@@ -85,17 +85,17 @@ And also bring up details on:
 
 fn adding(_game_log: &mut Vec<Game>)
 {
-    print!("In Progress");
+    println!("In Progress");
 }
 
 fn removing(_game_log: &mut Vec<Game>)
 {
-    print!("In Progress");
+    println!("In Progress");
 }
 
 fn searching(_game_log: &Vec<Game>)
 {
-    print!("In Progress");
+    println!("In Progress");
 }
 
 fn whole_list(game_log: &Vec<Game>) // Literally just print the whole file and return
@@ -117,9 +117,9 @@ fn whole_list(game_log: &Vec<Game>) // Literally just print the whole file and r
     }
 
     // Just a cleaner approach than having the program immediately take the user to the main menu
-    println!("\n \n Please press any key to go back to the main menu");
+    println!("\n \nPlease press 'Enter' to go back to the main menu");
 
     // Read user's choice
         let mut input = String::new();
-        io::stdin().read_line(&mut input); 
+        let _ = io::stdin().read_line(&mut input); // Literally only putting this in a variable to silence the warning
 }
