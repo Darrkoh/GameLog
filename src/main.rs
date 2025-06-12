@@ -15,24 +15,19 @@
     - Notes
 */
 
+mod json_backend;
+
 // Crates //
 use std::io;
-use std::io::prelude::*;
-use std::io::BufReader;
-use std::fs::File;
-use std::fs;
+use json_backend::Game;
+use json_backend::reading_json;
+
 
 // THIS IS THE INTERFACE USERS WILL BE INTERACTING WITH //
 fn main() -> io::Result<()> {
     let mut exit_condition = false;
 
-    let file = File::open("src/GameLog.txt")?; // Gets file contents
-    let metadata = fs::metadata("GameLog.txt")?; // Gets the information about the file (Like length for example)
-
-    let mut reader = BufReader::new(file); // Prepares file for reading by wrapping in 'BuffReader' to buffer the input
-    let mut buffer = String::new(); // Empty Buffer to store file contents in (Buffer is like a dynamic array that only stores text)
-
-    reader.read_to_string(&mut buffer)?; // Add File Contents to the buffer
+    let mut game_log = reading_json()?;
 
     println!(
         "Welcome To Your Game Log!
@@ -46,8 +41,7 @@ And also bring up details on:
 - All Playthroughs
 - Last Playthrough
 - Rating
-- Notes"
-    );
+- Notes");
 
     loop {
         println!("Please enter the corresponding option to access each function:
@@ -66,12 +60,17 @@ And also bring up details on:
 
         match input.as_str(){ // We turn input into a 'str' as 'String' and 'str' are not the same thing as 'str' is part of a string 
             "1"=> { 
-                let index = metadata.len(); 
-                adding();
+                adding(&mut game_log);
             },
-            "2"=> removing(),
-            "3"=> searching(),
-            "4"=> whole_list(buffer),
+            "2"=> { 
+                removing(&mut game_log);
+            },
+            "3"=> searching(&game_log),
+            "4"=> whole_list(&game_log),
+            "5" => {
+                println!("Exiting Program, Thank you for using this app :D");
+                exit_condition = true; // Close Game Condition
+            }
             _=> println!("Invalid Input")
         }
 
@@ -83,22 +82,36 @@ And also bring up details on:
     Ok(())
 }
 
-fn adding() -> io::Result<()>
+fn adding(game_log: &mut Vec<Game>)
 {
-    Ok(())
+    print!("In Progress");
 }
 
-fn removing() -> io::Result<()>
+fn removing(game_log: &mut Vec<Game>)
 {
-    Ok(())
+    print!("In Progress");
 }
 
-fn searching() -> io::Result<()>
+fn searching(game_log: &Vec<Game>)
 {
-    Ok(())
+    print!("In Progress");
 }
 
-fn whole_list(buffer: String) // Literally just print the whole file and return
+fn whole_list(game_log: &Vec<Game>) // Literally just print the whole file and return
 {
-    print!(buffer);
+    if game_log.is_empty() {
+        println!("Yeah the list is empty pal lmao") // lol
+    }
+    else {
+        for num in game_log
+            {
+                println!("\nName: {}\n  Rating /10: {}\n  Times Played: {}\n  Last Played: {}\n  Notes: {}",
+                    num.name,
+                    num.rating,
+                    num.times_played,
+                    num.last_playthrough,
+                    num.notes
+                );
+            }
+    }
 }
