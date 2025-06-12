@@ -31,3 +31,9 @@ pub fn reading_json() -> io::Result<Vec<Game>> // Result is wrapped around incas
         }
     }
 }
+
+// Create a Game and add it's Json data to the text file
+pub fn adding_game(game_log: &mut Vec<Game>, new_game: &Game)
+{
+
+}

@@ -19,6 +19,7 @@ mod json_backend;
 
 // Crates //
 use std::io;
+use std::u8;
 use json_backend::Game;
 use json_backend::reading_json;
 
@@ -83,9 +84,68 @@ And also bring up details on:
     Ok(())
 }
 
-fn adding(_game_log: &mut Vec<Game>)
+fn adding(game_log: &mut Vec<Game>)
 {
-    println!("In Progress");
+    let mut game_name = String::new();
+    let mut rating_string:String = String::new();
+    let mut game_notes: String = String::new(); // Make the variable nullable using 'Option'
+    let mut input = String::new();
+
+    // GAME NAME
+    println!("What's the Game's name?");
+    let _ = io::stdin().read_line(&mut game_name); // Literally just to shut up the warning, im using let
+    game_name = game_name.trim().to_string();
+
+    let exists = linear_search(game_log, &game_name);
+
+    // Leave Prematurely since the game already exists
+    if exists
+    {
+        println!("Game already exists in the log. Please edit the existing entry");
+        return; 
+    }
+
+    // RATING
+    println!("What rating are you giving the Game?");
+    let _ = io::stdin().read_line(&mut rating_string); // Literally just to shut up the warning, im using let
+    
+    let trimmed = rating_string.trim();
+    let game_rating = trimmed.parse::<u8>();
+
+    // If there is a parsing error, return to menu
+    match game_rating {
+        Ok(parsed) => Ok(parsed), // Either return the parsed Json List, or an error 
+        Err(_e) => 
+        {
+            println!("Nice try, Please enter an valid number.");
+            return;
+        }
+    }
+
+    if (0 > game_rating || game_rating > 5 )
+    {
+        println!("You entered an invalid number, please enter a rating from 1-5, returning to menu")
+    }
+
+    // NOTES
+    println!("Any Notes? (Just press enter if not");
+    let _ = io::stdin().read_line(&mut game_notes); // Literally just to shut up the warning, im using let
+
+    // Create Model and add to Text file/Vector
+
+    let new_game = Game {
+        &game_name;
+        &game_rating,
+        0,
+         ,
+        game_notes
+    };
+    adding_game(&mut game_log);
+
+    // Confirmation message
+    println!("Game added to the log! :D");
+    println!("Please press 'Enter' to go back to the main menu...");
+    let _ = io::stdin().read_line(&mut input); // Literally only putting this in a variable to silence the warning
 }
 
 fn removing(_game_log: &mut Vec<Game>)
@@ -117,9 +177,21 @@ fn whole_list(game_log: &Vec<Game>) // Literally just print the whole file and r
     }
 
     // Just a cleaner approach than having the program immediately take the user to the main menu
-    println!("\n \nPlease press 'Enter' to go back to the main menu");
+    println!("\n \nPlease press 'Enter' to go back to the main menu...");
 
-    // Read user's choice
+    // Confirmation to return to menu
         let mut input = String::new();
         let _ = io::stdin().read_line(&mut input); // Literally only putting this in a variable to silence the warning
+}
+
+fn linear_search(games: &Vec<Game>, target: &str) ->  bool
+{
+    for (i, num) in games.iter().enumerate()
+    {
+        if num.name == target
+        {
+            return true; // Game name exists in the list
+        }
+    }
+    false
 }
