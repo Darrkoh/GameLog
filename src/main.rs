@@ -104,7 +104,7 @@ fn adding(mut game_log: &mut Vec<Game>) -> Result<()>
 
     // GAME NAME
     println!("What's the Game's name?");
-    let _ = io::stdin().read_line(&mut game_name); // Literally just to shut up the warning, im using let
+    io::stdin().read_line(&mut game_name)?;
     game_name = game_name.trim().to_string();
 
     let exists = linear_search(game_log, &game_name, &mut index);
@@ -133,7 +133,7 @@ fn adding(mut game_log: &mut Vec<Game>) -> Result<()>
 
     // NOTES
     println!("Any Notes? (Just press enter if not)");
-    let _ = io::stdin().read_line(&mut game_notes); // Literally just to shut up the warning, im using let
+    io::stdin().read_line(&mut game_notes)?;
 
     // Create Model and add to Text file/Vector
 
@@ -152,7 +152,7 @@ fn adding(mut game_log: &mut Vec<Game>) -> Result<()>
     // Confirmation message
     println!("Game added to the log! :D");
     println!("Please press 'Enter' to go back to the main menu...");
-    let _ = io::stdin().read_line(&mut input); // Literally only putting this in a variable to silence the warning
+    io::stdin().read_line(&mut input)?;
 
     Ok(())
 }
