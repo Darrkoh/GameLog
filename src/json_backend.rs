@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use std::io::Result;
 
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Game {
     pub name: String,
     pub rating: u8,
@@ -35,9 +35,8 @@ pub fn reading_json() -> io::Result<Vec<Game>> // Result is wrapped around incas
 }
 
 // Create a Game and add it's Json data to the text file
-pub fn adding_game(game_log: &mut Vec<Game>, new_game: Game) -> Result<()>
+pub fn save_to_file(game_log: &mut Vec<Game>) -> Result<()>
 {
-    game_log.push(new_game); // Add new game to the Game Log list displayed to users 
 
     // Serialising a the game_log into JSON and overwriting the previous file with this new data. It's literally the same with the new data added
 
@@ -49,8 +48,6 @@ pub fn adding_game(game_log: &mut Vec<Game>, new_game: Game) -> Result<()>
     .truncate(true).
     open("src/GameLog.Json")?;
     file.write_all(new_json.as_bytes())?;
-    file.flush()?; // Ensure data is physically written
-
 
     Ok(())
 }

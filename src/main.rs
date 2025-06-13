@@ -19,12 +19,14 @@ mod json_backend;
 mod clock;
 
 // Crates //
+use std::io::Result; // So i can have easy error handling
 use std::io;
 use std::u8;
 use json_backend::Game;
 use json_backend::reading_json;
 use clock::get_date;
-use json_backend::adding_game;
+use json_backend::save_to_file;
+use serde_json::value::Index;
 
 // THIS IS THE INTERFACE USERS WILL BE INTERACTING WITH //
 fn main() -> io::Result<()> {
@@ -51,9 +53,10 @@ And also bring up details on:
         
         - Adding (1)
         - Removing (2)
-        - Searching (3) 
-        - Bring up whole list (4)
-        - Exit Program (5)
+        - Editing (3)
+        - Searching (4) 
+        - Bring up whole list (5)
+        - Exit Program (6)
         ");
 
         // Read user's choice
@@ -64,14 +67,15 @@ And also bring up details on:
 
         match input.as_str(){ // We turn input into a 'str' as 'String' and 'str' are not the same thing as 'str' is part of a string 
             "1"=> { 
-                adding(&mut game_log); // All referenced so we can just edit the original in the main function
+                adding(&mut game_log)?; // All referenced so we can just edit the original in the main function
             },
             "2"=> { 
                 removing(&mut game_log);
             },
-            "3"=> searching(&game_log),
-            "4"=> whole_list(&game_log),
-            "5" => {
+            "3"=> {editing(&mut game_log)?;},
+            "4"=> {searching(&mut game_log);},
+            "5"=> {whole_list(&mut game_log);},
+            "6" => {
                 println!("Exiting Program, Thank you for using this app :D");
                 exit_condition = true; // Close Game Condition
             }
@@ -86,30 +90,31 @@ And also bring up details on:
     Ok(())
 }
 
-fn adding(mut game_log: &mut Vec<Game>)
+fn adding(mut game_log: &mut Vec<Game>) -> Result<()>
 {
     let mut game_name = String::new();
     let mut rating_string:String = String::new();
     let mut game_notes: String = String::new(); // Make the variable nullable using 'Option'
     let mut input = String::new();
+    let mut index = 0;
 
     // GAME NAME
     println!("What's the Game's name?");
     let _ = io::stdin().read_line(&mut game_name); // Literally just to shut up the warning, im using let
     game_name = game_name.trim().to_string();
 
-    let exists = linear_search(game_log, &game_name);
+    let exists = linear_search(game_log, &game_name, &mut index);
 
     // Leave Prematurely since the game already exists
     if exists
     {
         println!("Game already exists in the log. Please edit the existing entry");
-        return; 
+        return Ok(()); 
     }
 
     // RATING
     println!("What rating are you giving the Game?");
-    let _ = io::stdin().read_line(&mut rating_string); // Literally just to shut up the warning, im using let
+    io::stdin().read_line(&mut rating_string)?;
     
     let trimmed = rating_string.trim();
     let game_rating: u8 = match trimmed.parse::<u8>()
@@ -118,7 +123,7 @@ fn adding(mut game_log: &mut Vec<Game>)
        Ok(num) if num >= 1 && num <= 5 => num,
         _ => {
             println!("Invalid rating. Please enter a number between 1 and 5.");
-            return;
+            return Ok(());
         }
     };
 
@@ -135,33 +140,72 @@ fn adding(mut game_log: &mut Vec<Game>)
         last_playthrough: get_date().to_string(),
         notes: game_notes
     };
-    adding_game(&mut game_log, new_game);
+
+    game_log.push(new_game); // Add new game to the Game Log list displayed to users 
+
+    save_to_file(&mut game_log)?; // We need to use a pointer here to the last element in the vector (Most Recent), as we cant use 'new_game' anymore
 
     // Confirmation message
     println!("Game added to the log! :D");
     println!("Please press 'Enter' to go back to the main menu...");
     let _ = io::stdin().read_line(&mut input); // Literally only putting this in a variable to silence the warning
+
+    Ok(())
 }
 
+fn editing(game_log: &mut Vec<Game>) -> Result<()>
+{
+    loop {
+        let mut index = 0;
+        let mut game_name = String::new();
+        let mut choice = String::new();
+        
+        println!("\nPlease Enter the EXACT game's name you want to edit :3");
+        io::stdin().read_line(&mut game_name)?; 
+
+        let game_exists = linear_search(game_log, &game_name, &mut index);
+
+        println!("{}", index);
+
+        println!("\nWhat part are you editing \n\n
+            - [1] Game Name
+            - [2] Rating
+            - [3] Notes
+            - [4] Increment Times Played
+            - Anything else to go back");
+        
+        io::stdin().read_line(&mut choice)?; 
+
+        match choice.as_str() {
+            "1" => {},
+            "2" => {},
+            "3" => {},
+            "4" => {},
+            _ => break
+        }
+    }
+    Ok(())
+}
 fn removing(_game_log: &mut Vec<Game>)
 {
     println!("In Progress");
 }
 
-fn searching(_game_log: &Vec<Game>)
+fn searching(_game_log: &mut Vec<Game>)
 {
     println!("In Progress");
 }
 
 fn whole_list(game_log: &Vec<Game>) // Literally just print the whole file and return
-{
+{32
     if game_log.is_empty() {
         println!("Yeah the list is empty pal lmao") // lol
     }
     else {
-        for num in game_log
+        for (i, num) in game_log.iter().enumerate()
             {
-                println!("\nName: {}\n  Rating /5: {}/5\n  Times Played: {}\n  Last Played: {}\n  Notes: {}",
+                println!("\n Index: {}  Name: {}\n  Rating /5: {}/5\n  Times Played: {}\n  Last Played: {}\n  Notes: {}",
+                    i,
                     num.name,
                     num.rating,
                     num.times_played,
@@ -179,7 +223,7 @@ fn whole_list(game_log: &Vec<Game>) // Literally just print the whole file and r
         let _ = io::stdin().read_line(&mut input); // Literally only putting this in a variable to silence the warning
 }
 
-fn linear_search(games: &Vec<Game>, target: &str) ->  bool
+fn linear_search(games: &Vec<Game>, target: &str, index_position: &mut usize) ->  bool
 {
     for (i, num) in games.iter().enumerate()
     {
