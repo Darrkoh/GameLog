@@ -17,6 +17,7 @@
 
 mod json_backend;
 mod clock;
+mod editing_operations;
 
 // Crates //
 use std::io::Result; // So i can have easy error handling
@@ -26,7 +27,10 @@ use json_backend::Game;
 use json_backend::reading_json;
 use clock::get_date;
 use json_backend::save_to_file;
-use serde_json::value::Index;
+use editing_operations::edit_game_name;
+use editing_operations::edit_game_rating;
+use editing_operations::edit_game_notes;
+use editing_operations::increment_times_played;
 
 // THIS IS THE INTERFACE USERS WILL BE INTERACTING WITH //
 fn main() -> io::Result<()> {
@@ -35,21 +39,21 @@ fn main() -> io::Result<()> {
     let mut game_log = reading_json()?;
 
     println!(
-        "Welcome To Your Game Log!
+        "\n Welcome To Your Game Log!
 
-Here You Can:
-- Add
-- Remove
-- Search For Games
+    Here You Can:
+    - Add
+    - Remove
+    - Search For Games
 
-And also bring up details on:
-- All Playthroughs
-- Last Playthrough
-- Rating
-- Notes");
+    And also bring up details on:
+    - All Playthroughs
+    - Last Playthrough
+    - Rating
+    - Notes");
 
     loop {
-        println!("Please enter the corresponding option to access each function:
+        println!("\n\n Please enter the corresponding option to access each function:
         
         - Adding (1)
         - Removing (2)
@@ -94,7 +98,7 @@ fn adding(mut game_log: &mut Vec<Game>) -> Result<()>
 {
     let mut game_name = String::new();
     let mut rating_string:String = String::new();
-    let mut game_notes: String = String::new(); // Make the variable nullable using 'Option'
+    let mut game_notes: String = String::new(); 
     let mut input = String::new();
     let mut index = 0;
 
@@ -128,7 +132,7 @@ fn adding(mut game_log: &mut Vec<Game>) -> Result<()>
     };
 
     // NOTES
-    println!("Any Notes? (Just press enter if not");
+    println!("Any Notes? (Just press enter if not)");
     let _ = io::stdin().read_line(&mut game_notes); // Literally just to shut up the warning, im using let
 
     // Create Model and add to Text file/Vector
@@ -163,9 +167,22 @@ fn editing(game_log: &mut Vec<Game>) -> Result<()>
         println!("\nPlease Enter the EXACT game's name you want to edit :3");
         io::stdin().read_line(&mut game_name)?; 
 
+        game_name = game_name.trim().to_string();
+
         let game_exists = linear_search(game_log, &game_name, &mut index);
 
-        println!("{}", index);
+        if !game_exists
+        {
+            println!(" \n\nThe Game '{}' doesn't exist. Make sure it's spelt the exact same as it is in the Game Log List or we can't find it :/", game_name);
+            return Ok(());
+        }
+
+        // IDEA: If list ever gets to big, have asynchronous print(Variable) here, where the variable changes to display ... animation
+        println!("\nGame found! Displaying Current Details
+            - Current Name: {} 
+            - Current Rating {}/5
+            - Current Times Played: {}
+            - Current Notes: {}", game_log[index].name, game_log[index].rating, game_log[index].times_played, game_log[index].notes );
 
         println!("\nWhat part are you editing \n\n
             - [1] Game Name
@@ -176,11 +193,11 @@ fn editing(game_log: &mut Vec<Game>) -> Result<()>
         
         io::stdin().read_line(&mut choice)?; 
 
-        match choice.as_str() {
-            "1" => {},
-            "2" => {},
-            "3" => {},
-            "4" => {},
+        match choice.trim() {
+            "1" => edit_game_name(game_log, &index)?,
+            "2" => edit_game_rating(game_log, &index)?,
+            "3" => edit_game_notes(game_log, &index)?,
+            "4" => increment_times_played(game_log, &index)?,
             _ => break
         }
     }
@@ -197,14 +214,14 @@ fn searching(_game_log: &mut Vec<Game>)
 }
 
 fn whole_list(game_log: &Vec<Game>) // Literally just print the whole file and return
-{32
+{
     if game_log.is_empty() {
         println!("Yeah the list is empty pal lmao") // lol
     }
     else {
         for (i, num) in game_log.iter().enumerate()
             {
-                println!("\n Index: {}  Name: {}\n  Rating /5: {}/5\n  Times Played: {}\n  Last Played: {}\n  Notes: {}",
+                println!("\n Index: {}\n  Name: {}\n  Rating: {}/5\n  Times Played: {}\n  Last Played: {}\n  Notes: {}",
                     i,
                     num.name,
                     num.rating,
@@ -229,6 +246,7 @@ fn linear_search(games: &Vec<Game>, target: &str, index_position: &mut usize) ->
     {
         if num.name == target
         {
+            *index_position = i; // Modify the data in that address (Dereference) to update the index to the games index, for accessing the games details outside the method
             return true; // Game name exists in the list
         }
     }
