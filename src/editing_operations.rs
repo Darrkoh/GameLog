@@ -1,17 +1,15 @@
-use anyhow::{Result, anyhow}; // So i can have easy error handling with anyhow
+use anyhow::{Result}; // So i can have easy error handling with anyhow
 use std::io;
-use crate::{adding_operations::get_user_rating, json_backend::{self, save_to_file}};
+use crate::{adding_operations::get_user_rating, adding_operations::get_game_name,json_backend::{self, save_to_file}};
 use json_backend::Game;
 
 // Obviously TODO
 pub fn edit_game_name(game_log: &mut Vec<Game>, index: &usize) -> Result<()>
 {
-    let mut new_name = String::new();
+    let new_name;
     let mut confirmation = String::new();
 
-    println!("\n\nOkay so what are we changing the name to???");
-    io::stdin().read_line(&mut new_name)?; 
-    new_name = new_name.trim().to_string();
+   new_name = get_game_name()?;
 
     println!("Are you 100% sure you wish to change the name '{}' to '{}' ('Yes' to confirm)", game_log[*index].name, new_name);
     io::stdin().read_line(&mut confirmation)?; 

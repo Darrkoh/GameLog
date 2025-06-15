@@ -3,7 +3,7 @@ use std::{fs::OpenOptions, io};
 use std::io::{BufReader, Write};
 use std::fs::File;
 use serde::{Deserialize, Serialize};
-use anyhow::{Result, anyhow}; // So i can have easy error handling with anyhow
+use anyhow::Result; // So i can have easy error handling with anyhow
 
 
 #[derive(Serialize, Deserialize, Clone)]

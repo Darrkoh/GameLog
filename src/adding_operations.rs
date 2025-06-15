@@ -16,7 +16,19 @@ pub fn get_user_rating () -> Result<u8>{
        => return Ok(num),
         _ => {
             println!("Invalid rating. Please enter a number between 1 and 5.");
-            return Err(anyhow!("Invalid Value")) // Create own error object using anyhow and return it
+            return Err(anyhow!("Invalid Value")) // Create error object using anyhow and return it
         }
     };
 }
+
+pub fn get_game_name () -> Result<String>{
+    let mut game_name: String = String::new();
+    println!("What's the Game's name?");
+
+    io::stdin().read_line(&mut game_name)?;
+
+    game_name = game_name.trim().to_string();
+
+    Ok(game_name)
+
+} 

@@ -28,7 +28,7 @@ use json_backend::Game;
 use json_backend::{reading_json, save_to_file};
 use clock::get_date;
 use editing_operations::{edit_game_name, edit_game_notes, edit_game_rating, increment_times_played};
-use adding_operations::get_user_rating;
+use adding_operations::{get_user_rating, get_game_name};
 
 // THIS IS THE INTERFACE USERS WILL BE INTERACTING WITH //
 fn main() -> Result<()> {
@@ -95,16 +95,14 @@ fn main() -> Result<()> {
 
 fn adding(mut game_log: &mut Vec<Game>) -> Result<()>
 {
-    let mut game_name = String::new();
-    let mut rating:u8;
+    let game_name;
+    let rating:u8;
     let mut game_notes: String = String::new(); 
     let mut input = String::new();
     let mut index = 0;
 
     // GAME NAME
-    println!("What's the Game's name?");
-    io::stdin().read_line(&mut game_name)?;
-    game_name = game_name.trim().to_string();
+    game_name = get_game_name()?;
 
     let exists = linear_search(game_log, &game_name, &mut index);
 
@@ -149,13 +147,10 @@ fn editing(game_log: &mut Vec<Game>) -> Result<()>
 {
     loop {
         let mut index = 0;
-        let mut game_name = String::new();
+        let game_name;
         let mut choice = String::new();
         
-        println!("\nPlease Enter the EXACT game's name you want to edit :3");
-        io::stdin().read_line(&mut game_name)?; 
-
-        game_name = game_name.trim().to_string();
+        game_name = get_game_name()?;
 
         let game_exists = linear_search(game_log, &game_name, &mut index);
 
