@@ -18,22 +18,20 @@
 mod json_backend;
 mod clock;
 mod editing_operations;
+mod adding_operations;
 
 // Crates //
-use std::io::Result; // So i can have easy error handling
-use std::io;
+use std::io; 
 use std::u8;
+use anyhow::Result;
 use json_backend::Game;
-use json_backend::reading_json;
+use json_backend::{reading_json, save_to_file};
 use clock::get_date;
-use json_backend::save_to_file;
-use editing_operations::edit_game_name;
-use editing_operations::edit_game_rating;
-use editing_operations::edit_game_notes;
-use editing_operations::increment_times_played;
+use editing_operations::{edit_game_name, edit_game_notes, edit_game_rating, increment_times_played};
+use adding_operations::get_user_rating;
 
 // THIS IS THE INTERFACE USERS WILL BE INTERACTING WITH //
-fn main() -> io::Result<()> {
+fn main() -> Result<()> {
     let mut exit_condition = false;
 
     let mut game_log = reading_json()?;
@@ -52,6 +50,7 @@ fn main() -> io::Result<()> {
     - Rating
     - Notes");
 
+    // Menu
     loop {
         println!("\n\n Please enter the corresponding option to access each function:
         
@@ -97,7 +96,7 @@ fn main() -> io::Result<()> {
 fn adding(mut game_log: &mut Vec<Game>) -> Result<()>
 {
     let mut game_name = String::new();
-    let mut rating_string:String = String::new();
+    let mut rating:u8;
     let mut game_notes: String = String::new(); 
     let mut input = String::new();
     let mut index = 0;
@@ -117,19 +116,8 @@ fn adding(mut game_log: &mut Vec<Game>) -> Result<()>
     }
 
     // RATING
-    println!("What rating are you giving the Game?");
-    io::stdin().read_line(&mut rating_string)?;
-    
-    let trimmed = rating_string.trim();
-    let game_rating: u8 = match trimmed.parse::<u8>()
-    {
-        // If there is a parsing error, return to menu{
-       Ok(num) if num >= 1 && num <= 5 => num,
-        _ => {
-            println!("Invalid rating. Please enter a number between 1 and 5.");
-            return Ok(());
-        }
-    };
+    rating = get_user_rating()?;
+
 
     // NOTES
     println!("Any Notes? (Just press enter if not)");
@@ -139,7 +127,7 @@ fn adding(mut game_log: &mut Vec<Game>) -> Result<()>
 
     let new_game = Game {
         name: game_name,
-        rating: game_rating,
+        rating: rating,
         times_played: 1,
         last_playthrough: get_date().to_string(),
         notes: game_notes
@@ -203,6 +191,7 @@ fn editing(game_log: &mut Vec<Game>) -> Result<()>
     }
     Ok(())
 }
+
 fn removing(_game_log: &mut Vec<Game>)
 {
     println!("In Progress");
