@@ -79,10 +79,10 @@ fn main() -> Result<()> {
             "4"=> {searching(&mut game_log);},
             "5"=> {whole_list(&mut game_log);},
             "6" => {
-                println!("Exiting Program, Thank you for using this app :D");
+                println!(" Exiting Program, Thank you for using this app :D");
                 exit_condition = true; // Close Game Condition
             }
-            _=> println!("Invalid Input")
+            _=> println!(" Invalid Input")
         }
 
         // The break is in a for loop to check if user wishes to quit, So the loop will run atleast once
@@ -109,14 +109,20 @@ fn adding(mut game_log: &mut Vec<Game>) -> Result<()>
     // Leave Prematurely since the game already exists
     if exists
     {
-        println!("Game already exists in the log. Please edit the existing entry");
+        println!("\n\n Game already exists in the log. Please edit the existing entry");
         return Ok(()); 
     }
 
     // RATING
-    rating = get_user_rating()?;
-
-
+    match  get_user_rating() { // Save the rating if a valid number is given
+        Ok(user_rating) =>  rating = user_rating, // Tell user the rating wasn't saved as they entered an invalid number (ERROR HANDLING)
+        _ => 
+        { 
+            println!(" Returning to previous menu...");
+            return Ok(())
+        }
+    }
+    
     // NOTES
     println!("Any Notes? (Just press enter if not)");
     io::stdin().read_line(&mut game_notes)?;
@@ -136,8 +142,8 @@ fn adding(mut game_log: &mut Vec<Game>) -> Result<()>
     save_to_file(&mut game_log)?; // We need to use a pointer here to the last element in the vector (Most Recent), as we cant use 'new_game' anymore
 
     // Confirmation message
-    println!("Game added to the log! :D");
-    println!("Please press 'Enter' to go back to the main menu...");
+    println!(" Game added to the log! :D");
+    println!(" Please press 'Enter' to go back to the main menu...");
     io::stdin().read_line(&mut input)?;
 
     Ok(())
@@ -156,12 +162,12 @@ fn editing(game_log: &mut Vec<Game>) -> Result<()>
 
         if !game_exists
         {
-            println!(" \n\nThe Game '{}' doesn't exist. Make sure it's spelt the exact same as it is in the Game Log List or we can't find it :/", game_name);
+            println!(" \n\n The Game '{}' doesn't exist. Make sure it's spelt the exact same as it is in the Game Log List or we can't find it :/", game_name);
             return Ok(());
         }
 
         // IDEA: If list ever gets to big, have asynchronous print(Variable) here, where the variable changes to display ... animation
-        println!("\nGame found! Displaying Current Details
+        println!("\n Game found! Displaying Current Details
             - Current Name: {} 
             - Current Rating {}/5
             - Current Times Played: {}
@@ -189,18 +195,18 @@ fn editing(game_log: &mut Vec<Game>) -> Result<()>
 
 fn removing(_game_log: &mut Vec<Game>)
 {
-    println!("In Progress");
+    println!(" In Progress");
 }
 
 fn searching(_game_log: &mut Vec<Game>)
 {
-    println!("In Progress");
+    println!(" In Progress");
 }
 
 fn whole_list(game_log: &Vec<Game>) // Literally just print the whole file and return
 {
     if game_log.is_empty() {
-        println!("Yeah the list is empty pal lmao") // lol
+        println!(" Yeah the list is empty pal lmao") // lol
     }
     else {
         for (i, num) in game_log.iter().enumerate()
