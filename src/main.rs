@@ -69,17 +69,13 @@ fn main() -> Result<()> {
         input = input.trim().to_string(); // This just removes any empty space after the inputted text
 
         match input.as_str(){ // We turn input into a 'str' as 'String' and 'str' are not the same thing as 'str' is part of a string 
-            "1"=> { 
-                adding(&mut game_log)?; // All referenced so we can just edit the original in the main function
-            },
-            "2"=> { 
-                removing(&mut game_log);
-            },
+            "1"=> { adding(&mut game_log)?;}, // All referenced so we can just edit the original in the main function
+            "2"=> {removing(&mut game_log)?;},
             "3"=> {editing(&mut game_log)?;},
             "4"=> {searching(&mut game_log);},
             "5"=> {whole_list(&mut game_log);},
             "6" => {
-                println!(" Exiting Program, Thank you for using this app :D");
+                println!(" \nExiting Program, Thank you for using this app :D\n");
                 exit_condition = true; // Close Game Condition
             }
             _=> println!(" Invalid Input")
@@ -200,17 +196,44 @@ fn editing(game_log: &mut Vec<Game>) -> Result<()>
     Ok(())
 }
 
-fn removing(_game_log: &mut Vec<Game>)
+fn removing(game_log: &mut Vec<Game>) -> Result<()>
+{
+    println!(" Which Game do you wish to remove? [Enter Name].");
+    println!(" To return to menu, enter nothing");
+    let mut answer = String::new();
+    io::stdin().read_line(&mut answer)?;
+
+    let answer_comparison = answer.trim();
+
+    let mut index: usize = 0;
+
+    // Exit condition check
+    if answer_comparison.is_empty()
+    {
+        println!(" Exiting Remove Process...");
+        return Ok(());
+    };
+
+    let exists = linear_search(game_log, answer_comparison, &mut index);
+
+    // If game isn't a thing, exit method
+    if !exists {
+        println!(" Game Not found");
+        return Ok(());
+    };
+
+    // Remove the game and its data, then save the new list to the JSON file
+    game_log.remove(index);
+    save_to_file(game_log);
+    Ok(())
+}
+
+fn searching(_game_log: &[Game])
 {
     println!(" In Progress");
 }
 
-fn searching(_game_log: &mut Vec<Game>)
-{
-    println!(" In Progress");
-}
-
-fn whole_list(game_log: &Vec<Game>) // Literally just print the whole file and return
+fn whole_list(game_log: &[Game]) // Literally just print the whole file and return
 {
     if game_log.is_empty() {
         println!(" Yeah the list is empty pal lmao") // lol
@@ -237,9 +260,9 @@ fn whole_list(game_log: &Vec<Game>) // Literally just print the whole file and r
         let _ = io::stdin().read_line(&mut input); // Literally only putting this in a variable to silence the warning
 }
 
-fn linear_search(games: &Vec<Game>, target: &str, index_position: &mut usize) ->  bool
+fn linear_search(game_log: &[Game], target: &str, index_position: &mut usize) ->  bool
 {
-    for (i, num) in games.iter().enumerate()
+    for (i, num) in game_log.iter().enumerate()
     {
         if num.name == target
         {
