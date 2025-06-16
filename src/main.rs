@@ -104,6 +104,13 @@ fn adding(mut game_log: &mut Vec<Game>) -> Result<()>
     // GAME NAME
     game_name = get_game_name()?;
 
+    // If user enters an empty string to try and be funny
+    if game_name.is_empty()
+    {
+        println!("\n\n Game Name not entered, Exiting Process");
+        return Ok(());
+    }
+
     let exists = linear_search(game_log, &game_name, &mut index);
 
     // Leave Prematurely since the game already exists
