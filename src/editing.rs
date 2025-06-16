@@ -1,6 +1,6 @@
 use anyhow::{Result}; // So i can have easy error handling with anyhow
 use std::io;
-use crate::{adding_operations::get_user_rating, adding_operations::get_game_name,json_backend::{self, save_to_file}};
+use crate::{get_details::get_user_rating, get_details::get_game_name,json_backend::{self, save_to_file}};
 use json_backend::Game;
 
 // Obviously TODO

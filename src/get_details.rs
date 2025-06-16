@@ -1,5 +1,6 @@
 use std::io;
 use anyhow::{Result, anyhow};
+use crate::json_backend::Game;
 
 pub fn get_user_rating () -> Result<u8>{
     
@@ -32,4 +33,16 @@ pub fn get_game_name () -> Result<String>{
 
     Ok(game_name)
 
+} 
+
+pub fn get_game_details (game: &Game, index: & usize)
+{
+    println!("\n Index: {}\n  Name: {}\n  Rating: {}/5\n  Times Played: {}\n  Last Played: {}\n  Notes: {}",
+                index,
+                game.name,
+                game.rating,
+                game.times_played,
+                game.last_playthrough,
+                game.notes
+            );
 } 

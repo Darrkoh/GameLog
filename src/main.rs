@@ -17,8 +17,9 @@
 
 mod json_backend;
 mod clock;
-mod editing_operations;
-mod adding_operations;
+mod editing;
+mod get_details;
+mod searching;
 
 // Crates //
 use std::io; 
@@ -27,8 +28,9 @@ use anyhow::Result;
 use json_backend::Game;
 use json_backend::{reading_json, save_to_file};
 use clock::get_date;
-use editing_operations::{edit_game_name, edit_game_notes, edit_game_rating, increment_times_played};
-use adding_operations::{get_user_rating, get_game_name};
+use editing::{edit_game_name, edit_game_notes, edit_game_rating, increment_times_played};
+use get_details::{get_user_rating, get_game_name, get_game_details};
+use searching::linear_search;
 
 // THIS IS THE INTERFACE USERS WILL BE INTERACTING WITH //
 fn main() -> Result<()> {
@@ -72,8 +74,8 @@ fn main() -> Result<()> {
             "1"=> {adding(&mut game_log)?;}, // All referenced so we can just edit the original in the main function
             "2"=> {removing(&mut game_log)?;},
             "3"=> {editing(&mut game_log)?;},
-            "4"=> {searching(&mut game_log);},
-            "5"=> {whole_list(&mut game_log);},
+            "4"=> {searching(&mut game_log)?;},
+            "5"=> {whole_list(&mut game_log)?;},
             "6" => {
                 println!(" \nExiting Program, Thank you for using this app :D\n");
                 exit_condition = true; // Close Game Condition
@@ -264,7 +266,7 @@ fn searching(game_log: &[Game]) -> Result<()>
         
         let game: &Game = &game_log[index];
 
-        game_details(game, &index);
+        get_game_details(game, &index);
     }
     Ok(())
 }
@@ -277,7 +279,7 @@ fn whole_list(game_log: &[Game]) -> Result<()> // Literally just print the whole
     }
     for (i, game) in game_log.iter().enumerate()
         {
-            game_details(game, &i);
+            get_game_details(game, &i);
         }
 
     // Just a cleaner approach than having the program immediately take the user to the main menu
@@ -289,28 +291,3 @@ fn whole_list(game_log: &[Game]) -> Result<()> // Literally just print the whole
 
     Ok(())
 }
-
-fn linear_search(game_log: &[Game], target: &str, index_position: &mut usize) ->  bool
-{
-    for (i, num) in game_log.iter().enumerate()
-    {
-        if num.name == target
-        {
-            *index_position = i; // Modify the data in that address (Dereference) to update the index to the games index, for accessing the games details outside the method
-            return true; // Game name exists in the list
-        }
-    }
-    false
-}
-
-fn game_details (game: &Game, index: & usize)
-{
-    println!("\n Index: {}\n  Name: {}\n  Rating: {}/5\n  Times Played: {}\n  Last Played: {}\n  Notes: {}",
-                index,
-                game.name,
-                game.rating,
-                game.times_played,
-                game.last_playthrough,
-                game.notes
-            );
-} 
