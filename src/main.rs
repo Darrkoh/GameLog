@@ -26,8 +26,7 @@ mod basic_operations;
 use std::io; 
 use std::u8;
 use anyhow::{Result}; // So i can have easy error handling with anyhow
-use json_backend::Game;
-use json_backend::{reading_json, save_to_file};
+use json_backend::{Game, reading_json, save_to_file};
 use clock::get_date;
 use editing::{edit_game_name, edit_game_notes, edit_game_rating, increment_times_played};
 use get_details::{get_user_rating, get_game_name, get_game_details, get_game_notes};
@@ -184,7 +183,8 @@ fn editing(game_log: &mut Vec<Game>) -> Result<()>
             - Current Name: {} 
             - Current Rating {}/5
             - Current Times Played: {}
-            - Current Notes: {}", game_log[index].name, game_log[index].rating, game_log[index].times_played, game_log[index].notes );
+            - - Current Last Date Played: {}
+            - Current Notes: {}", game_log[index].name, game_log[index].rating, game_log[index].times_played, game_log[index].last_playthrough, game_log[index].notes );
 
         println!("\nWhat part are you editing \n\n
             - [1] Game Name

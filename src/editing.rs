@@ -1,7 +1,8 @@
 use anyhow::{Result}; // So i can have easy error handling with anyhow
-use std::io;
-use crate::{get_details::get_user_rating, get_details::get_game_name, get_details::get_game_notes, json_backend::{self, save_to_file}};
+use std::io::{self};
+use crate::{basic_operations::check_empty, get_details::{get_game_name, get_game_notes, get_user_rating}, json_backend::{self, save_to_file}};
 use json_backend::Game;
+use chrono::{NaiveDate};
 
 // Obviously TODO
 pub fn edit_game_name(game_log: &mut Vec<Game>, index: &usize) -> Result<()>
@@ -69,7 +70,53 @@ pub fn edit_game_notes(game_log: &mut Vec<Game>, index: &usize) -> Result<()>
 
 pub fn increment_times_played(game_log: &mut Vec<Game>, index: &usize) -> Result<()>
 {
-    println!("\n\n");
+    let plays_number: u8;
+    // Get the Number of plays we're adding and handle input errors
+    loop {
+        let mut plays = String::new();
+        println!("How many plays do you want to add?");
+        io::stdin().read_line(&mut plays)?;
 
+        match check_empty(&plays)
+        {
+            Ok(plays) => 
+            {
+                plays_number = match plays.trim().parse::<u8>()
+                {
+                    Ok(num) => num,
+                    _ => 
+                    {
+                        println!("You need to enter a valid number");
+                        continue; // Invalid input detected so we need to go back to the start of the loop
+                    }
+                }
+            },
+            _ => 
+            {
+                println!("You need to enter a number");
+                continue; // Invalid input detected so we need to go back to the start of the loop
+            }
+        }
+        break;
+    }
+
+    // Get last played date, handle input errors and save the updated information to the JSON file.
+    loop {
+        let mut date_input: String = String::new();
+        println!("When did you last play (YYYY-MM-DD)");
+        io::stdin().read_line(&mut date_input)?;
+
+        match NaiveDate::parse_from_str(&date_input.trim(), "%Y-%m-%d")
+        {
+            Ok(date) => { 
+                game_log[*index].times_played += plays_number;
+                game_log[*index].last_playthrough = date.to_string();
+                save_to_file(game_log)?;
+                println!("Successfully updated game :D");
+                break;
+            },
+            _ => println!("You entered an invalid date. Please enter a valid date")
+        }
+    }
     Ok(())
 }

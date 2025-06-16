@@ -1,8 +1,6 @@
-use crate::json_backend;
-
+use crate::json_backend::Game;
 use std::io;
 use anyhow::{Result, anyhow};
-use json_backend::Game;
 
 pub fn get_user_rating () -> Result<u8>{
     
