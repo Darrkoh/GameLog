@@ -20,17 +20,19 @@ mod clock;
 mod editing;
 mod get_details;
 mod searching;
+mod basic_operations;
 
 // Crates //
 use std::io; 
 use std::u8;
-use anyhow::Result;
+use anyhow::{Result}; // So i can have easy error handling with anyhow
 use json_backend::Game;
 use json_backend::{reading_json, save_to_file};
 use clock::get_date;
 use editing::{edit_game_name, edit_game_notes, edit_game_rating, increment_times_played};
-use get_details::{get_user_rating, get_game_name, get_game_details};
+use get_details::{get_user_rating, get_game_name, get_game_details, get_game_notes};
 use searching::linear_search;
+use basic_operations::check_empty;
 
 // THIS IS THE INTERFACE USERS WILL BE INTERACTING WITH //
 fn main() -> Result<()> {
@@ -93,21 +95,21 @@ fn main() -> Result<()> {
 
 fn adding(mut game_log: &mut Vec<Game>) -> Result<()>
 {
-    let game_name;
+    let mut game_name;
     let rating:u8;
-    let mut game_notes: String = String::new(); 
+    let game_notes: String; 
     let mut input = String::new();
     let mut index = 0;
 
     // GAME NAME
     game_name = get_game_name()?;
 
-    // If user enters an empty string to try and be funny
-    if game_name.is_empty()
-    {
-        println!("\n\n Game Name not entered, Exiting Process");
-        return Ok(());
-    }
+   // Exit if Empty Text
+        match check_empty(&game_name) 
+        {
+            Ok(_input) => game_name = game_name.trim().to_string(),
+            _ => return Ok(()) // Cancel operation if user enters an invalid input
+        }
 
     let exists = linear_search(game_log, &game_name, &mut index);
 
@@ -129,8 +131,7 @@ fn adding(mut game_log: &mut Vec<Game>) -> Result<()>
     }
     
     // NOTES
-    println!("Any Notes? (Just press enter if not)");
-    io::stdin().read_line(&mut game_notes)?;
+    game_notes = get_game_notes()?;
 
     // Create Model and add to Text file/Vector
 
@@ -158,15 +159,16 @@ fn editing(game_log: &mut Vec<Game>) -> Result<()>
 {
     loop {
         let mut index = 0;
-        let game_name;
+        let mut game_name;
         let mut choice = String::new();
         
         game_name = get_game_name()?;
 
-        if game_name.is_empty()
+        // Exit if Empty Text
+        match check_empty(&game_name) 
         {
-        println!("\n\n Game Name not entered, Exiting Process");
-        return Ok(());
+            Ok(_input) => game_name = game_name.trim().to_string(),
+            _ => return Ok(()) // Cancel operation if user enters an invalid input
         }
 
         let game_exists = linear_search(game_log, &game_name, &mut index);
@@ -206,21 +208,19 @@ fn editing(game_log: &mut Vec<Game>) -> Result<()>
 
 fn removing(game_log: &mut Vec<Game>) -> Result<()>
 {
-    let game_name;
+    let mut game_name;
     game_name = get_game_name()?;
 
     // Yeah this is how you exit
-    if game_name.is_empty()
+    match check_empty(&game_name) 
     {
-        println!("\n\n Game Name not entered, Exiting Process");
-        return Ok(());
+        Ok(_input) => game_name = game_name.trim().to_string(),
+        _ => return Ok(()) // Cancel operation if user enters an invalid input
     }
-
-    let answer_comparison = game_name.trim();
 
     let mut index: usize = 0;
    
-    let exists = linear_search(game_log, answer_comparison, &mut index);
+    let exists = linear_search(game_log, &game_name, &mut index);
 
     // If game isn't a thing, exit method
     if !exists {
@@ -228,7 +228,7 @@ fn removing(game_log: &mut Vec<Game>) -> Result<()>
         return Ok(());
     };
 
-    println!(" Are you SURE you want to REMOVE '{}' [Enter 'Yes']", answer_comparison);
+    println!(" Are you SURE you want to REMOVE '{}' [Enter 'Yes']", game_name);
     let mut confirmation_answer = String::new();
     io::stdin().read_line(&mut confirmation_answer)?;
     let confirmation_answer_comparison = confirmation_answer.trim();
@@ -291,3 +291,4 @@ fn whole_list(game_log: &[Game]) -> Result<()> // Literally just print the whole
 
     Ok(())
 }
+

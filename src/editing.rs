@@ -1,6 +1,6 @@
 use anyhow::{Result}; // So i can have easy error handling with anyhow
 use std::io;
-use crate::{get_details::get_user_rating, get_details::get_game_name,json_backend::{self, save_to_file}};
+use crate::{get_details::get_user_rating, get_details::get_game_name, get_details::get_game_notes, json_backend::{self, save_to_file}};
 use json_backend::Game;
 
 // Obviously TODO
@@ -44,7 +44,26 @@ pub fn edit_game_rating(game_log: &mut Vec<Game>, index: &usize) -> Result<()>
 
 pub fn edit_game_notes(game_log: &mut Vec<Game>, index: &usize) -> Result<()>
 {
-    println!("\n\n");
+    let new_notes: String;
+    let mut confirmation: String = String::new();
+
+    new_notes = get_game_notes()?;
+
+    println!("Are you 100% sure you wish to change the notes from '{}' to '{}' ('Yes' to confirm)", game_log[*index].notes, new_notes);
+    io::stdin().read_line(&mut confirmation)?; 
+    confirmation = confirmation.trim().to_string();
+
+    if confirmation.as_str() == "Yes"
+    {
+        game_log[*index].notes = new_notes;
+        
+        save_to_file(game_log)?; // Update the JSON file.
+        println!("Okay Changed :D")
+    }
+    else {
+        println!("Notes Change Cancelled...")
+    }
+
     Ok(())
 }
 

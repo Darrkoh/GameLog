@@ -1,6 +1,8 @@
+use crate::json_backend;
+
 use std::io;
 use anyhow::{Result, anyhow};
-use crate::json_backend::Game;
+use json_backend::Game;
 
 pub fn get_user_rating () -> Result<u8>{
     
@@ -32,7 +34,16 @@ pub fn get_game_name () -> Result<String>{
     game_name = game_name.trim().to_string();
 
     Ok(game_name)
+} 
 
+
+pub fn get_game_notes () -> Result<String>{
+    let mut game_notes: String = String::new();
+    println!("What Notes do you have? (Just press enter to go back)");
+    io::stdin().read_line(&mut game_notes)?;
+    let game_notes = game_notes.trim().to_string();
+
+    Ok(game_notes)
 } 
 
 pub fn get_game_details (game: &Game, index: & usize)
