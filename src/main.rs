@@ -69,9 +69,7 @@ fn main() -> Result<()> {
         let mut input = String::new();
         io::stdin().read_line(&mut input)?; 
 
-        input = input.trim().to_string(); // This just removes any empty space after the inputted text
-
-        match input.as_str(){ // We turn input into a 'str' as 'String' and 'str' are not the same thing as 'str' is part of a string 
+        match input.trim(){ // We turn input into a 'str' using trim (also eliminates blank spaces) as 'String' and 'str' are not the same thing as 'str' is part of a string 
             "1"=> {adding(&mut game_log)?;}, // All referenced so we can just edit the original in the main function
             "2"=> {removing(&mut game_log)?;},
             "3"=> {editing(&mut game_log)?;},
@@ -149,7 +147,7 @@ fn adding(mut game_log: &mut Vec<Game>) -> Result<()>
     // Confirmation message
     println!(" Game added to the log! :D");
     println!(" Please press 'Enter' to go back to the main menu...");
-    io::stdin().read_line(&mut input)?;
+    io::stdin().read_line(&mut input)?; // What the user enters does not matter, its just so we can confirm theyre okay with the result
 
     Ok(())
 }
@@ -256,7 +254,7 @@ fn searching(game_log: &[Game]) -> Result<()>
         let mut index = 0;
         game_name = get_game_name()?;
 
-        exists = linear_search(game_log, &game_name, & mut index);
+        exists = linear_search(game_log, &game_name, &mut index);
 
         if !exists
         {
@@ -287,7 +285,7 @@ fn whole_list(game_log: &[Game]) -> Result<()> // Literally just print the whole
 
     // Confirmation to return to menu
     let mut input = String::new();
-    let _ = io::stdin().read_line(&mut input); // Literally only putting this in a variable to silence the warning
+    io::stdin().read_line(&mut input)?;
 
     Ok(())
 }

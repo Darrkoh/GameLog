@@ -35,7 +35,7 @@ pub fn reading_json() -> io::Result<Vec<Game>> // Result is wrapped around incas
 }
 
 // Create a Game and add it's Json data to the text file
-pub fn save_to_file(game_log: &mut Vec<Game>) -> Result<()>
+pub fn save_to_file(game_log: &Vec<Game>) -> Result<()>
 {
 
     // Serialising a the game_log into JSON and overwriting the previous file with this new data. It's literally the same with the new data added

@@ -13,8 +13,8 @@ pub fn get_user_rating () -> Result<u8>{
     match trimmed.parse::<u8>()
     {
         // If there is a parsing error, return to menu{
-       Ok(num) if num >= 1 && num <= 5 
-       => return Ok(num),
+       Ok(rate) if rate >= 1 && rate <= 5 
+       => return Ok(rate),
         _ => {
             println!("\n Invalid rating. Please enter a number between 1 and 5.");
             return Err(anyhow!("Invalid Value")) // Create error object using anyhow and return it
