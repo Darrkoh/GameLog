@@ -161,6 +161,12 @@ fn editing(game_log: &mut Vec<Game>) -> Result<()>
         
         game_name = get_game_name()?;
 
+        if game_name.is_empty()
+        {
+        println!("\n\n Game Name not entered, Exiting Process");
+        return Ok(());
+        }
+
         let game_exists = linear_search(game_log, &game_name, &mut index);
 
         if !game_exists
@@ -198,22 +204,20 @@ fn editing(game_log: &mut Vec<Game>) -> Result<()>
 
 fn removing(game_log: &mut Vec<Game>) -> Result<()>
 {
-    println!(" Which Game do you wish to remove? [Enter Name].");
-    println!(" To return to menu, enter nothing");
-    let mut answer = String::new();
-    io::stdin().read_line(&mut answer)?;
+    let game_name;
+    game_name = get_game_name()?;
 
-    let answer_comparison = answer.trim();
+    // Yeah this is how you exit
+    if game_name.is_empty()
+    {
+        println!("\n\n Game Name not entered, Exiting Process");
+        return Ok(());
+    }
+
+    let answer_comparison = game_name.trim();
 
     let mut index: usize = 0;
-
-    // Exit condition check
-    if answer_comparison.is_empty()
-    {
-        println!(" Exiting Remove Process...");
-        return Ok(());
-    };
-
+   
     let exists = linear_search(game_log, answer_comparison, &mut index);
 
     // If game isn't a thing, exit method
@@ -242,36 +246,48 @@ fn removing(game_log: &mut Vec<Game>) -> Result<()>
     Ok(())
 }
 
-fn searching(_game_log: &[Game])
+fn searching(game_log: &[Game]) -> Result<()>
 {
-    println!(" In Progress");
+    loop {
+        let game_name;
+        let exists: bool;
+        let mut index = 0;
+        game_name = get_game_name()?;
+
+        exists = linear_search(game_log, &game_name, & mut index);
+
+        if !exists
+        {
+            println!("\n This game don't exist buddy :/");
+            break;
+        }
+        
+        let game: &Game = &game_log[index];
+
+        game_details(game, &index);
+    }
+    Ok(())
 }
 
-fn whole_list(game_log: &[Game]) // Literally just print the whole file and return
+fn whole_list(game_log: &[Game]) -> Result<()> // Literally just print the whole file and return
 {
     if game_log.is_empty() {
-        println!(" Yeah the list is empty pal lmao") // lol
+        println!(" Yeah the list is empty pal lmao"); // lol
+        return Ok(());
     }
-    else {
-        for (i, num) in game_log.iter().enumerate()
-            {
-                println!("\n Index: {}\n  Name: {}\n  Rating: {}/5\n  Times Played: {}\n  Last Played: {}\n  Notes: {}",
-                    i,
-                    num.name,
-                    num.rating,
-                    num.times_played,
-                    num.last_playthrough,
-                    num.notes
-                );
-            }
-    }
+    for (i, game) in game_log.iter().enumerate()
+        {
+            game_details(game, &i);
+        }
 
     // Just a cleaner approach than having the program immediately take the user to the main menu
     println!("\n \nPlease press 'Enter' to go back to the main menu...");
 
     // Confirmation to return to menu
-        let mut input = String::new();
-        let _ = io::stdin().read_line(&mut input); // Literally only putting this in a variable to silence the warning
+    let mut input = String::new();
+    let _ = io::stdin().read_line(&mut input); // Literally only putting this in a variable to silence the warning
+
+    Ok(())
 }
 
 fn linear_search(game_log: &[Game], target: &str, index_position: &mut usize) ->  bool
@@ -286,3 +302,15 @@ fn linear_search(game_log: &[Game], target: &str, index_position: &mut usize) ->
     }
     false
 }
+
+fn game_details (game: &Game, index: & usize)
+{
+    println!("\n Index: {}\n  Name: {}\n  Rating: {}/5\n  Times Played: {}\n  Last Played: {}\n  Notes: {}",
+                index,
+                game.name,
+                game.rating,
+                game.times_played,
+                game.last_playthrough,
+                game.notes
+            );
+} 

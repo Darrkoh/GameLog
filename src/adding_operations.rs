@@ -24,6 +24,7 @@ pub fn get_user_rating () -> Result<u8>{
 pub fn get_game_name () -> Result<String>{
     let mut game_name: String = String::new();
     println!("\n\n What's the Game's name?");
+    println!(" Entering nothing will exit the process");
 
     io::stdin().read_line(&mut game_name)?;
 
