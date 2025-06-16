@@ -69,7 +69,7 @@ fn main() -> Result<()> {
         input = input.trim().to_string(); // This just removes any empty space after the inputted text
 
         match input.as_str(){ // We turn input into a 'str' as 'String' and 'str' are not the same thing as 'str' is part of a string 
-            "1"=> { adding(&mut game_log)?;}, // All referenced so we can just edit the original in the main function
+            "1"=> {adding(&mut game_log)?;}, // All referenced so we can just edit the original in the main function
             "2"=> {removing(&mut game_log)?;},
             "3"=> {editing(&mut game_log)?;},
             "4"=> {searching(&mut game_log);},
@@ -222,9 +222,23 @@ fn removing(game_log: &mut Vec<Game>) -> Result<()>
         return Ok(());
     };
 
+    println!(" Are you SURE you want to REMOVE '{}' [Enter 'Yes']", answer_comparison);
+    let mut confirmation_answer = String::new();
+    io::stdin().read_line(&mut confirmation_answer)?;
+    let confirmation_answer_comparison = confirmation_answer.trim();
+
+    // If user does not confirm they want to remove the gamem, return to previous menu
+    if confirmation_answer_comparison != "Yes"
+    {
+        println!("Operation Cancelled");
+        return Ok(());
+    }
+
     // Remove the game and its data, then save the new list to the JSON file
     game_log.remove(index);
-    save_to_file(game_log);
+    save_to_file(game_log)?;
+
+    println!("Game Removed");
     Ok(())
 }
 
