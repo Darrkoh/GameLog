@@ -13,10 +13,11 @@ pub enum Rating {
 }
 
 impl Rating {
-    pub fn to_u8(&self) -> u8 // Parameter is the rating enum (Self allows for us to reference the object we're implementing on)
-    {
-       return *self as u8; // We dont need a map here as I already mapped it out inb the enum
-    }
+    
+// pub fn to_u8(&self) -> u8 // Parameter is the rating enum (Self allows for us to reference the object we're implementing on)
+// {
+//     return *self as u8; // We dont need a map here as I already mapped it out inb the enum
+// }
     
     pub fn from_u8(value: u8) -> Option<Rating> // Parameter is the rating enum (Self allows for us to reference the object we're implementing on)
     {

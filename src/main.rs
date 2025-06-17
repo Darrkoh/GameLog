@@ -25,7 +25,6 @@ mod enums;
 
 // Crates //
 use std::io; 
-use std::u8;
 use anyhow::{Result}; // So i can have easy error handling with anyhow
 use json_backend::{Game, reading_json, save_to_file};
 use clock::get_date;
@@ -232,10 +231,9 @@ fn removing(game_log: &mut Vec<Game>) -> Result<()>
     println!(" Are you SURE you want to REMOVE '{}' [Enter 'Yes']", game_name);
     let mut confirmation_answer = String::new();
     io::stdin().read_line(&mut confirmation_answer)?;
-    let confirmation_answer_comparison = confirmation_answer.trim();
 
     // If user does not confirm they want to remove the gamem, return to previous menu
-    if confirmation_answer_comparison != "Yes"
+    if confirmation_answer.trim().to_lowercase() != "yes"
     {
         println!("Operation Cancelled");
         return Ok(());
