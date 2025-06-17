@@ -219,7 +219,6 @@ fn removing(game_log: &mut Vec<Game>) -> Result<()>
     }
 
     let mut index: usize = 0;
-   
     let exists = linear_search(game_log, &game_name, &mut index);
 
     // If game isn't a thing, exit method
@@ -291,3 +290,27 @@ fn whole_list(game_log: &[Game]) -> Result<()> // Literally just print the whole
     Ok(())
 }
 
+/////// UNIT TESTS //////////
+
+#[cfg(test)]
+mod tests {
+    // Importing names from outer (for mod tests) scope.
+    use super::*;
+
+    #[test]
+    fn test_searching_for_game() {
+        let game_log: Vec<Game> = vec![
+            Game { name: "Zelda".to_string(), rating: Rating::Four, times_played: 1, last_playthrough: "2023-06-17".to_string(), notes: "".to_string() }, // to_string is used as they currently in a borrowed format, we need to own them
+            Game { name: "Mario".to_string(), rating: Rating::Three, times_played: 2, last_playthrough: "2023-06-18".to_string(), notes: "MARIOOOO".to_string() }
+        ];
+
+        let mut index:usize  = 0;
+        assert_eq!(linear_search(&game_log, &"zelda", &mut index), true); // Should be true
+
+        let mut index: usize = 0;
+        assert_eq!(linear_search(&game_log, &"Mario", &mut index), true); // Should be true
+
+        let mut index: usize = 0;
+        assert_eq!(linear_search(&game_log, &"zda", &mut index), false); // Should be false
+    }
+}
