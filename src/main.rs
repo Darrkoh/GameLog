@@ -21,6 +21,7 @@ mod editing;
 mod get_details;
 mod searching;
 mod basic_operations;
+mod enums;
 
 // Crates //
 use std::io; 
@@ -32,6 +33,8 @@ use editing::{edit_game_name, edit_game_notes, edit_game_rating, increment_times
 use get_details::{get_user_rating, get_game_name, get_game_details, get_game_notes};
 use searching::linear_search;
 use basic_operations::check_empty;
+
+use crate::enums::Rating;
 
 // THIS IS THE INTERFACE USERS WILL BE INTERACTING WITH //
 fn main() -> Result<()> {
@@ -93,7 +96,7 @@ fn main() -> Result<()> {
 fn adding(mut game_log: &mut Vec<Game>) -> Result<()>
 {
     let mut game_name;
-    let rating:u8;
+    let rating: Rating;
     let game_notes: String; 
     let mut input = String::new();
     let mut index = 0;

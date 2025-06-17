@@ -4,12 +4,14 @@ use std::io::{BufReader, Write};
 use std::fs::File;
 use serde::{Deserialize, Serialize};
 use anyhow::Result; // So i can have easy error handling with anyhow
+use enums::Rating;
 
+use crate::enums;
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Game {
     pub name: String,
-    pub rating: u8,
+    pub rating: Rating,
     pub times_played: u8,
     pub last_playthrough: String,
     pub notes: String

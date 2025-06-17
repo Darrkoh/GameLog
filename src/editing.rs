@@ -1,8 +1,9 @@
 use anyhow::{Result}; // So i can have easy error handling with anyhow
 use std::io::{self};
-use crate::{basic_operations::check_empty, get_details::{get_game_name, get_game_notes, get_user_rating}, json_backend::{self, save_to_file}};
+use crate::{basic_operations::check_empty, enums, get_details::{get_game_name, get_game_notes, get_user_rating}, json_backend::{self, save_to_file}};
 use json_backend::Game;
 use chrono::{NaiveDate};
+use enums::Rating;
 
 // Obviously TODO
 pub fn edit_game_name(game_log: &mut Vec<Game>, index: &usize) -> Result<()>
