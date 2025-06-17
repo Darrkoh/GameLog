@@ -297,6 +297,7 @@ mod tests {
     // Importing names from outer (for mod tests) scope.
     use super::*;
 
+    // Testing Searching for a specific game works
     #[test]
     fn test_searching_for_game() {
         let game_log: Vec<Game> = vec![
@@ -312,5 +313,18 @@ mod tests {
 
         let mut index: usize = 0;
         assert_eq!(linear_search(&game_log, &"zda", &mut index), false); // Should be false
+    }
+
+    // Testing empty text is flagged, whilst valid text isn't
+    #[test]
+    fn test_check_empty() -> Result<()> {
+        let result = check_empty("");
+        assert!(check_empty("").is_err()); // Check its an error
+
+        let error = result.unwrap_err();
+        let error_msg = format!("{}", error); // Get Error Message For Comparison
+
+        assert_eq!(error_msg, "No Text Entered"); // Check Error Message is correct
+        Ok(())
     }
 }
