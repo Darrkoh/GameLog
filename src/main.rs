@@ -291,6 +291,8 @@ fn whole_list(game_log: &[Game]) -> Result<()> // Literally just print the whole
 }
 
 /////// UNIT TESTS //////////
+/// 
+/// Run with 'cargo test'
 
 #[cfg(test)]
 mod tests {
