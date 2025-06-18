@@ -45,4 +45,5 @@ This was a project to help me familiarise myself with Rust, for comparison with 
    
 The program will launch a terminal interface.
 
-1 Game is already saved in the JSON file as an example, and also for running unit tests. This can be removed if you don't want it, located in src/GameLog.json.
+**1 Game is already saved in the JSON file as an example, and also for running unit tests. This can be removed if you don't want it, located in src/GameLog.json.**
+
